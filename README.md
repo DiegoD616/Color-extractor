@@ -1,5 +1,4 @@
 # Color-extractor
 
-Este repositorio contiene una implementación del algoritmo de Lloyd para hacer clustering.
-La implementación mencionada se usara para analizar una imagen y extraer la paleta de colores como
-un ejemplo práctico de como se puede usar el clustering para extraer información.
+Este repositorio contiene una API creada con FastAPI para extraer la paleta de colores de images.
+La API utiliza una implementación del [algoritmo de Lloyd](https://en.wikipedia.org/wiki/Lloyd%27s_algorithm) para hacer clustering con los pixeles de imagenes y retornar los centroides.
