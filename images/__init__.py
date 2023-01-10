@@ -1,1 +1,1 @@
-from .images import load_image_as_array, save_image
+from .images import load_image_as_array, rendered_img

@@ -6,12 +6,12 @@ def load_image_as_array(filename, resize=None, color_mode = "RGB"):
     if resize is not None: img = img.resize(resize)
     return np.array(img).astype("float32")
 
-def save_image(img, color_pallet, name):
+def rendered_img(img, color_pallet):
     result = get_canvas_result(img)
     drawable = ImageDraw.Draw(result)
     drawable.text((10, 10), "Paleta de colores", size=250, fill="black")
     add_color_pallet(drawable, color_pallet)
-    result.save(name)
+    return result
 
 def get_canvas_result(img):
     image = Image.fromarray(np.uint8(img))
