@@ -22,7 +22,11 @@ def single_pallet( amount_colors: int, image_to_process: UploadFile = File(...) 
     color_extractor = ColorExtractor(amount_colors, ITERS_TO_RUN, SIZE_FOR_LOADED_IMGS)
     color_pallet = color_extractor.get_color_pallet(loaded_img).tolist()
     os.remove(destination_file_path)
-    return {i+1:tuple(color_pallet[i]) for i in range(len(color_pallet))}
+    return color_pallet_to_dic(color_pallet)
+
+def color_pallet_to_dic(color_pallet):
+    pallet_as_list = color_pallet.tolist()
+    return {i+1:tuple(pallet_as_list[i]) for i in range(len(pallet_as_list))}
 
 @app.post("/single-rendered-pallet")
 def single_rendered_pallet( amount_colors: int, image_to_process: UploadFile = File(...) ):
