@@ -20,7 +20,7 @@ def single_pallet( amount_colors: int, image_to_process: UploadFile = File(...) 
     destination_file_path = asyncio.run(save_recived_file(image_to_process))
     loaded_img = load_image_as_array(destination_file_path, resize = SIZE_FOR_LOADED_IMGS)
     color_extractor = ColorExtractor(amount_colors, ITERS_TO_RUN, SIZE_FOR_LOADED_IMGS)
-    color_pallet = color_extractor.get_color_pallet(loaded_img).tolist()
+    color_pallet = color_extractor.get_color_pallet(loaded_img)
     os.remove(destination_file_path)
     return color_pallet_to_dic(color_pallet)
 
