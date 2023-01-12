@@ -10,26 +10,26 @@ from images import load_image_as_array
 from PIL import Image
 
 ITERS_TO_RUN = 5
-AMOUNT_COLORS = 5
 SIZE_FOR_LOADED_IMGS = (685, 385)
-COLOR_EXTRACTOR = ColorExtractor(AMOUNT_COLORS, ITERS_TO_RUN, SIZE_FOR_LOADED_IMGS)
 DIR_IMGS_TO_PROCESS = "./base_imgs/"
 
 app = FastAPI()
 
 @app.post("/single-pallet")
-def single_pallet( image_to_process: UploadFile = File(...) ):
+def single_pallet( amount_colors: int, image_to_process: UploadFile = File(...) ):
     destination_file_path = asyncio.run(save_recived_file(image_to_process))
     loaded_img = load_image_as_array(destination_file_path, resize = SIZE_FOR_LOADED_IMGS)
-    color_pallet = COLOR_EXTRACTOR.get_color_pallet(loaded_img).tolist()
+    color_extractor = ColorExtractor(amount_colors, ITERS_TO_RUN, SIZE_FOR_LOADED_IMGS)
+    color_pallet = color_extractor.get_color_pallet(loaded_img).tolist()
     os.remove(destination_file_path)
     return {i+1:tuple(color_pallet[i]) for i in range(len(color_pallet))}
 
 @app.post("/single-rendered-pallet")
-def single_rendered_pallet( image_to_process: UploadFile = File(...) ):
+def single_rendered_pallet( amount_colors: int, image_to_process: UploadFile = File(...) ):
     destination_file_path = asyncio.run(save_recived_file(image_to_process))
     loaded_img = load_image_as_array(destination_file_path, resize = SIZE_FOR_LOADED_IMGS)
-    image = COLOR_EXTRACTOR.get_rendered_img_pallet(loaded_img)
+    color_extractor = ColorExtractor(amount_colors, ITERS_TO_RUN, SIZE_FOR_LOADED_IMGS)
+    image = color_extractor.get_rendered_img_pallet(loaded_img)
     memory_stream = io.BytesIO()
     image.save(memory_stream, format="PNG")
     memory_stream.seek(0)
