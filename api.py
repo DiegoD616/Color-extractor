@@ -16,7 +16,18 @@ DIR_IMGS_TO_PROCESS = "./base_imgs/"
 app = FastAPI()
 
 @app.post("/single-pallet")
-def single_pallet( amount_colors: int, image_to_process: UploadFile = File(...) ):
+def single_pallet( amount_colors: int, image_to_process: UploadFile = File(...) ) -> dict:
+    """Returns a dictionary with the image's most relevant colors as the values and integers as the keys.
+    The color will be returned in RGB format.
+
+    Args:
+        amount_colors (int): The amount of colors to extract from image_to_process
+        image_to_process (UploadFile): This is the image from which the colors will be extracted.
+
+    Returns:
+        dict: A dictionary with the most relevant colors
+    """
+
     destination_file_path = asyncio.run(save_recived_file(image_to_process))
     loaded_img = load_image_as_array(destination_file_path, resize = SIZE_FOR_LOADED_IMGS)
     color_extractor = ColorExtractor(amount_colors, ITERS_TO_RUN, SIZE_FOR_LOADED_IMGS)
@@ -24,12 +35,30 @@ def single_pallet( amount_colors: int, image_to_process: UploadFile = File(...) 
     os.remove(destination_file_path)
     return color_pallet_to_dic(color_pallet)
 
-def color_pallet_to_dic(color_pallet):
+def color_pallet_to_dic(color_pallet: numpy.array) -> dict:
+    """Transforms the color pallet from numpy.array to dictionary
+
+    Args:
+        color_pallet (numpy.array): The color pallet as created by the ColorExtractor.
+
+    Returns:
+        dict: The color pallet in dictonary form
+    """
     pallet_as_list = color_pallet.tolist()
     return {i+1:tuple(pallet_as_list[i]) for i in range(len(pallet_as_list))}
 
 @app.post("/single-rendered-pallet")
-def single_rendered_pallet( amount_colors: int, image_to_process: UploadFile = File(...) ):
+def single_rendered_pallet( amount_colors: int, image_to_process: UploadFile = File(...) ) -> StreamingResponse:
+    """Returns an image which showscases the uploaded image next its extracted color pallet.
+
+    Args:
+        amount_colors (int): The amount of colors to extract from image_to_process.
+        image_to_process (UploadFile): This is the image from which the colors will be extracted.
+
+    Returns:
+        StreamingResponse: The rendered image.
+    """
+
     destination_file_path = asyncio.run(save_recived_file(image_to_process))
     loaded_img = load_image_as_array(destination_file_path, resize = SIZE_FOR_LOADED_IMGS)
     color_extractor = ColorExtractor(amount_colors, ITERS_TO_RUN, SIZE_FOR_LOADED_IMGS)
@@ -40,7 +69,16 @@ def single_rendered_pallet( amount_colors: int, image_to_process: UploadFile = F
     os.remove(destination_file_path)
     return StreamingResponse(memory_stream, media_type="image/png")
 
-async def save_recived_file(image_to_process):
+async def save_recived_file(image_to_process) -> str:
+    """Saves a recieved file in the server.
+
+    Args:
+        image_to_process (UploadFile): Image to save.
+
+    Returns:
+        str: The path to the saved file.
+    """
+
     destination_file_path = DIR_IMGS_TO_PROCESS + image_to_process.filename
     async with aiofiles.open(destination_file_path, 'wb') as out_file:
         while content := await image_to_process.read(1024):
