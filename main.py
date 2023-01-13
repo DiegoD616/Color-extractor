@@ -1,3 +1,9 @@
+"""API - Main
+
+This script allows the user to start a uvicorn server which runs the api's app
+
+    * main - the main function of the script
+"""
 import api
 import uvicorn
 
