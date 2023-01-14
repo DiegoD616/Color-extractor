@@ -3,7 +3,7 @@ import asyncio
 import io
 import os
 from fastapi import FastAPI, File, UploadFile, Form
-from fastapi.responses import FileResponse, StreamingResponse
+from fastapi.responses import FileResponse, StreamingResponse, RedirectResponse
 
 from color_extractor import ColorExtractor
 from images import load_image_as_array
@@ -14,6 +14,14 @@ SIZE_FOR_LOADED_IMGS = (685, 385)
 DIR_IMGS_TO_PROCESS = "./base_imgs/"
 
 app = FastAPI()
+
+@app.get("/")
+def root():
+    """The root dir redirects to the docs because right now there's nothing at the root."""
+
+    response = RedirectResponse(url='/docs')
+    return response
+
 
 @app.post("/single-pallet")
 def single_pallet( amount_colors: int, image_to_process: UploadFile = File(...) ) -> dict:
@@ -35,7 +43,7 @@ def single_pallet( amount_colors: int, image_to_process: UploadFile = File(...) 
     os.remove(destination_file_path)
     return color_pallet_to_dic(color_pallet)
 
-def color_pallet_to_dic(color_pallet: numpy.array) -> dict:
+def color_pallet_to_dic(color_pallet) -> dict:
     """Transforms the color pallet from numpy.array to dictionary
 
     Args:
@@ -44,6 +52,7 @@ def color_pallet_to_dic(color_pallet: numpy.array) -> dict:
     Returns:
         dict: The color pallet in dictonary form
     """
+    
     pallet_as_list = color_pallet.tolist()
     return {i+1:tuple(pallet_as_list[i]) for i in range(len(pallet_as_list))}
 
