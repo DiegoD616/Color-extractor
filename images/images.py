@@ -1,4 +1,5 @@
 from PIL import Image, ImageDraw, ImageFont
+import io
 import numpy as np
 
 def load_image_as_array(filename: str, resize: tuple = None, color_mode: str = "RGB") -> np.array:
@@ -22,7 +23,7 @@ def load_image_as_array(filename: str, resize: tuple = None, color_mode: str = "
     if resize is not None: img = img.resize(resize)
     return np.array(img).astype("float32")
 
-def rendered_img(img, color_pallet):
+def rendered_img(img, color_pallet, byte_stream):
     """Renders an image with the color_pallet next to the img.
 
     Args:
@@ -37,6 +38,13 @@ def rendered_img(img, color_pallet):
     drawable = ImageDraw.Draw(result)
     drawable.text((10, 10), "Paleta de colores", size=250, fill="black")
     add_color_pallet(drawable, color_pallet)
+    
+    if byte_stream:
+        memory_stream = io.BytesIO()
+        result.save(memory_stream, format="PNG")
+        memory_stream.seek(0)
+        return memory_stream
+
     return result
 
 def get_canvas_result(img):

@@ -40,7 +40,7 @@ class ColorExtractor:
         self.iters_to_run_clustering = iters_to_run
         self.amount_pixels = img_sizes[0] * img_sizes[1]
 
-    def get_rendered_img_pallet(self, loaded_img):
+    def get_rendered_img_pallet(self, loaded_img, byte_stream):
         """Returns an image with the loaded_img's color pallet.
 
         Args:
@@ -51,7 +51,7 @@ class ColorExtractor:
         """
 
         color_pallet   = self.get_color_pallet(loaded_img)
-        image = rendered_img(loaded_img, color_pallet)
+        image = rendered_img(loaded_img, color_pallet, byte_stream)
         return image
 
     def get_color_pallet(self, loaded_img):

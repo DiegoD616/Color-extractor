@@ -3,13 +3,11 @@
 This script allows the user to start a uvicorn server which runs the api's app
 
 """
-import io
 from fastapi import FastAPI, File, UploadFile, Form
 from fastapi.responses import FileResponse, StreamingResponse, RedirectResponse
 
 from color_extractor import ColorExtractor
 from images import load_image_as_array
-from PIL import Image
 
 ITERS_TO_RUN = 1
 SIZE_FOR_LOADED_IMGS = (685, 385)
@@ -69,8 +67,5 @@ def single_rendered_pallet( amount_colors: int, image_to_process: UploadFile = F
 
     loaded_img = load_image_as_array(image_to_process.file, resize = SIZE_FOR_LOADED_IMGS)
     color_extractor = ColorExtractor(amount_colors, ITERS_TO_RUN, SIZE_FOR_LOADED_IMGS)
-    image = color_extractor.get_rendered_img_pallet(loaded_img)
-    memory_stream = io.BytesIO()
-    image.save(memory_stream, format="PNG")
-    memory_stream.seek(0)
-    return StreamingResponse(memory_stream, media_type="image/png")
+    image_stream = color_extractor.get_rendered_img_pallet(loaded_img, True)
+    return StreamingResponse(image_stream, media_type="image/png")
